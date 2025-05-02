@@ -1,3 +1,12 @@
 config.js
 node_modules
 .idea
+.DS_Store
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+.cursor
+memory-bank

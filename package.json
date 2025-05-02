@@ -3,12 +3,14 @@
   "version": "0.0.1",
   "description": "Use Timeular.com data to log time in Noko.",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "mocha"
   },
   "author": "chris@lullabot.com",
   "license": "GNU",
   "dependencies": {
+    "@keyboardcowboy/taskprompt": "^1.0.0",
     "colors": "^1.4.0",
     "commander": "^7.2.0",
     "inquirer": "^8.1.0",
