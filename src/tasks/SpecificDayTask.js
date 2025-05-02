@@ -1,7 +1,7 @@
 export class SpecificDayTask {
   static id = 'specificDay';
-  static name = 'specificDay';
-  static description = 'Specific Day';
+  static name = 'Choose Date';
+  static description = '';
   static weight = 50;
   static chain = true;
   static questions = [

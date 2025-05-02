@@ -1,7 +1,7 @@
 export class ThisWeekTask {
   static id = 'thisWeek';
-  static name = 'thisWeek';
-  static description = "This Week's Hours";
+  static name = "This Week's Hours";
+  static description = "";
   static weight = 30;
   static chain = true;
   static async execute() {

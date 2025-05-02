@@ -1,7 +1,7 @@
 export class ActivitiesTask {
   static id = 'activities';
-  static name = 'activities';
-  static description = 'Timeular Activities';
+  static name = 'Timeular Activities';
+  static description = '';
   static weight = 60;
   static chain = true;
   static async execute() {

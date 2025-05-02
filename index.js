@@ -6,6 +6,6 @@ import { tasks } from './src/tasks/index.js';
 const taskManager = new TaskManager();
 
 // Register our custom tasks
-TaskManager.registerTasks(tasks);
+taskManager.registerTasks(tasks);
 
 taskManager.run();
