@@ -2,13 +2,10 @@
  * Custom class to report Timeular time to Noko.
  */
 
-const inquirer = require("inquirer");
-const TimeularApi = require('../lib/TimeularApi');
-const NokoApi = require('../lib/NokoApi');
-const TimeularEntry = require("../lib/src/TimeularEntry");
-const NokoTimeEntry = require('../lib/src/NokoTimeEntry');
-const colors = require('colors');
-const config = require("../config");
+import TimeularApi from '../lib/TimeularApi.js';
+import NokoApi from '../lib/NokoApi.js';
+import NokoTimeEntry from '../lib/src/NokoTimeEntry.js';
+import colors from 'colors';
 
 class Timeular2Noko {
     /**
@@ -172,52 +169,6 @@ class Timeular2Noko {
             nokoProjectId = this.config.activityProjectMap[activity.getId()];
         }
         return nokoProjectId;
-    }
-
-    /**
-     * Get the  name of the report to run.  If not supplied, give users a choice.
-     *
-     * @param options
-     * @param reports
-     * @returns {Promise<unknown>}
-     */
-    getReport(options, reports) {
-        return new Promise((resolve, reject) => {
-            // Get a list of report names from the processor.
-            let reportNames = [];
-            for (let i in reports) {
-                reportNames.push({name: reports[i].label, value: i});
-            }
-
-            const reportName = {
-                type: 'list',
-                name: 'reportName',
-                message: "What report would you like to run?",
-                choices: reportNames,
-                when(answers) {
-                    return !options.hasOwnProperty('report') || options.report !== 'customDate';
-                }
-            };
-            const reportDate = {
-                name: 'reportDate',
-                message: "Get Report for Date [yyyy-mm-dd]:",
-                when(answers) {
-                    return answers.reportName === 'customDate' || options?.report === 'customDate';
-                }
-            };
-
-            // If a report wasn't specified as an option, ask the user for it.
-            if (!options.hasOwnProperty('report') || options.report === 'customDate') {
-                inquirer.prompt([reportName, reportDate]).then(answers => {
-                    // Backfill the report name if it was supplied on the CLI.
-                    answers.reportName = answers.reportName || options.report;
-
-                    resolve(answers);
-                });
-            } else {
-                resolve({reportName: options.report, reportDate: null});
-            }
-        });
     }
 
     /**
@@ -437,4 +388,4 @@ class Timeular2Noko {
     }
 }
 
-module.exports = Timeular2Noko;
+export default Timeular2Noko;
