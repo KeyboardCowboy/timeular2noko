@@ -1,7 +1,7 @@
 /**
  * ThisWeekTask
  *
- * Fetches and displays time entries for the current week from Timeular.
+ * Fetches and displays time entries for the current week from Early.
  * This task is used to review and report on the current week's logged hours and activities.
  *
  * @typedef {import('@keyboardcowboy/taskprompt').Task} Task

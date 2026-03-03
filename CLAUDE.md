@@ -4,20 +4,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a Node.js CLI tool that syncs time entries from Timeular (a physical time-tracking device/service) to Noko (a business time-tracking platform). It retrieves time entries from Timeular, groups them by project, and creates corresponding entries in Noko.
+This is a Node.js CLI tool that syncs time entries from Early (a physical time-tracking device/service) to Noko (a business time-tracking platform). It retrieves time entries from Early, groups them by project, and creates corresponding entries in Noko.
 
 ## Development Commands
 
 ### Running the Application
 ```bash
-node index.js                    # Interactive prompt to select report
-node index.js -r <report>        # Run specific report
-node index.js -r customDate      # Prompt for specific date
+node index.js                    # Interactive prompt to select task
 node index.js -m <minutes>       # Set rounding increment (default: 5)
 node index.js -d                 # Enable debug mode
 ```
 
-Available report types: `today`, `yesterday`, `thisWeek`, `lastWeek`, `customDate`, `activities`
+Available tasks: `Today's Hours`, `Yesterday's Hours`, `This Week's Hours`, `Last Week's Hours`, `Choose Date`, `Early Activities`
 
 ### Testing
 ```bash
@@ -28,9 +26,9 @@ npm test                         # Run all tests with Mocha
 
 The application requires a `config.js` file (not tracked in git) based on `example.config.js`. Key configuration:
 
-- `timeularKey` / `timeularSecret`: Timeular API credentials
+- `earlyKey` / `earlySecret`: Early API credentials
 - `nokoToken`: Noko Personal Access Token
-- `activityProjectMap`: Maps Timeular Activity IDs to Noko Project IDs
+- `activityProjectMap`: Maps Early Activity IDs to Noko Project IDs
 - `roundProject`: Round project summary time to nearest minute increment (default: 15)
 - `roundEntry`: Round each time entry (set via CLI, default: 5)
 - `prefixNotes`: Whether to prefix activity notes with activity name (default: false)
@@ -40,46 +38,49 @@ The application requires a `config.js` file (not tracked in git) based on `examp
 ### Core Components
 
 **Main Entry Point** (`index.js`)
-- Uses Commander for CLI argument parsing
-- Uses Inquirer for interactive prompts
-- Orchestrates the flow: init → load report → print → optionally submit to Noko
+- Imports prototype side-effect files
+- Calls `initApp()` to authenticate with Early before the menu starts
+- Uses TaskManager from `@keyboardcowboy/taskprompt` for interactive task selection
 
-**Timeular2Noko Class** (`src/Timeular2Noko.js`)
+**AppContext** (`src/AppContext.js`)
+- Singleton that initializes and exposes the `Early2Noko` instance
+- Tasks call `getT2N()` to access the initialized APIs
+
+**Early2Noko Class** (`src/Early2Noko.js`)
 - Main business logic coordinator
-- Manages both TimeularApi and NokoApi instances
+- Manages both EarlyApi and NokoApi instances
 - Handles grouping entries by date/project
 - Calculates billable vs non-billable summaries
 - Formats and prints reports to console
 - Submits entries to Noko
 
 **API Clients**
-- `lib/TimeularApi.js`: Handles Timeular API v3 requests with caching (NodeCache)
+- `lib/EarlyApi.js`: Handles Early API v3 requests with caching (NodeCache)
 - `lib/NokoApi.js`: Handles Noko API v2 requests with caching
 
 **Data Models** (`lib/src/`)
-- `TimeularEntry.js`: Represents a Timeular time entry
-- `TimeularActivity.js`: Represents a Timeular activity
+- `EarlyEntry.js`: Represents an Early time entry
+- `EarlyActivity.js`: Represents an Early activity
 - `NokoTimeEntry.js`: Represents a Noko time entry payload
 - `NokoProject.js`: Represents a Noko project
 
-**Reports** (`src/reports.js`)
-- Configuration object defining available reports
-- Each report has: `label`, `load()`, `print()`, optional `sendToNoko` flag
-- Reports use the pattern: load data → print to console → optionally submit
+**Tasks** (`src/tasks/`)
+- Each task implements `execute()` with report logic and optional Noko submission prompt
+- Tasks import `getT2N()` from `AppContext.js`
 
 ### Date Handling
 
 The application extends `Date.prototype` (`lib/Date.prototype.js`) with custom methods:
-- `getTimeularTime()`: Formats dates for Timeular API (ISO string without Z, timezone-adjusted)
+- `getEarlyTime()`: Formats dates for Early API (ISO string without Z, timezone-adjusted)
 - Additional date manipulation methods defined in `src/prototype.js` (e.g., `setDayStart()`, `setWeekStart()`)
 
 These prototype extensions are required before other modules are loaded.
 
 ### Data Flow
 
-1. **Authentication**: Connect to Timeular API (JWT token), Noko uses header token
-2. **Data Retrieval**: Fetch Timeular entries for date range, fetch Timeular activities
-3. **Activity Mapping**: Match Timeular activity IDs to Noko project IDs via config
+1. **Authentication**: Connect to Early API (JWT token), Noko uses header token
+2. **Data Retrieval**: Fetch Early entries for date range, fetch Early activities
+3. **Activity Mapping**: Match Early activity IDs to Noko project IDs via config
 4. **Grouping**: Group entries by date, then by Noko project
 5. **Enrichment**: Fetch Noko project details for each group
 6. **Display**: Calculate totals, format output with colors library
@@ -89,13 +90,13 @@ These prototype extensions are required before other modules are loaded.
 
 - **Caching**: Both API clients use NodeCache to reduce redundant requests
 - **Promise-based**: All async operations use Promises/async-await
-- **Note Processing**: Extracts tags (starting with #) and notes from Timeular entries, optionally prefixes non-tag notes with activity names
+- **Note Processing**: Extracts tags (starting with #) and notes from Early entries, optionally prefixes non-tag notes with activity names
 - **Time Rounding**: Entries rounded using `Math.ceilX()` (custom method) based on config
 - **Error Handling**: API errors caught and displayed with optional debug details
 
 ## Important Notes
 
-- Timeular API requires authentication via API key/secret to obtain a session token
+- Early API requires authentication via API key/secret to obtain a session token
 - Noko API uses personal access tokens in the `X-NokoToken` header
 - The config file (`config.js`) is gitignored and must be created locally
 - Active Noko projects only: Time will not be logged to archived/deactivated projects

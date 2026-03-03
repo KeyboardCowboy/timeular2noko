@@ -1,7 +1,7 @@
 /**
  * LastWeekTask
  *
- * Fetches and displays time entries for the previous week from Timeular.
+ * Fetches and displays time entries for the previous week from Early.
  * This task is used to review and report on the previous week's logged hours and activities.
  *
  * @typedef {import('@keyboardcowboy/taskprompt').Task} Task

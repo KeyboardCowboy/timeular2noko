@@ -1,7 +1,7 @@
 /**
  * ActivitiesTask
  *
- * Fetches and displays all available activities from Timeular.
+ * Fetches and displays all available activities from Early.
  * This task is used to view and manage the list of activities that can be tracked.
  *
  * @typedef {import('@keyboardcowboy/taskprompt').Task} Task
@@ -14,7 +14,7 @@ import { getT2N } from '../AppContext.js';
 
 export const ActivitiesTask = {
     id: 'activities',
-    name: 'Timeular Activities',
+    name: 'Early Activities',
     description: '',
     weight: 60,
     chain: true,

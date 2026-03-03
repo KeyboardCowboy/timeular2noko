@@ -1,7 +1,7 @@
 /**
  * YesterdayTask
  *
- * Fetches and displays time entries for the previous day from Timeular.
+ * Fetches and displays time entries for the previous day from Early.
  * This task is used to review and report on yesterday's logged hours and activities.
  *
  * @typedef {import('@keyboardcowboy/taskprompt').Task} Task

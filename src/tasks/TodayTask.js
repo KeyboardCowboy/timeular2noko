@@ -1,7 +1,7 @@
 /**
  * TodayTask
  *
- * Fetches and displays time entries for the current day from Timeular.
+ * Fetches and displays time entries for the current day from Early.
  * This task is used to quickly view today's logged hours and activities.
  *
  * @typedef {import('@keyboardcowboy/taskprompt').Task} Task

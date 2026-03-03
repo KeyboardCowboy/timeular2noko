@@ -1,7 +1,7 @@
 /**
  * SpecificDayTask
  *
- * Fetches and displays time entries for a specific date from Timeular.
+ * Fetches and displays time entries for a specific date from Early.
  * This task prompts the user for a date and then retrieves the time entries for that day.
  *
  * @typedef {import('@keyboardcowboy/taskprompt').Task} Task
