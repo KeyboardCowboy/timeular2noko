@@ -20,7 +20,7 @@ export const ActivitiesTask = {
     chain: true,
     async execute(taskManager) {
         const T2N = getT2N();
-        const activities = await T2N.timeularApi.getActivities();
+        const activities = await T2N.earlyApi.getActivities();
         activities.forEach(activity => {
             console.log(activity.getId() + ': ' + activity.getName());
         });

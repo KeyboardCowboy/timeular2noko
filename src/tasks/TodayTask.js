@@ -28,14 +28,14 @@ export const TodayTask = {
         const date2 = new Date();
         date2.setDayEnd();
 
-        const entries = await T2N.timeularApi.getTimeEntries(date1, date2);
+        const entries = await T2N.earlyApi.getTimeEntries(date1, date2);
 
         if (entries.length === 0) {
             T2N.printEmptyReport();
             return;
         }
 
-        const projGroup = await T2N.groupTimeularEntriesByProject(entries);
+        const projGroup = await T2N.groupEarlyEntriesByProject(entries);
         await T2N.printDaySummary(entries[0].getDate(), projGroup);
 
         console.log('');

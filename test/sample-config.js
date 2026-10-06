@@ -1,4 +1,4 @@
-module.exports = {
+export default {
     "earlyKey": "earlyKeyValue",
     "earlySecret": "earlySecretValue",
     "nokoToken": 'nokoTokenValue',

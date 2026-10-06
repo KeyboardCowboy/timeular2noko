@@ -18,12 +18,12 @@ If you log your time using Early, you can map the Early activities to Noko proje
 1. To begin, you will need to have at least one Early activity defined and optionally mapped to your otcohedron.  You will also need to have at least one Noko project defined.
 2. Install this package.
     ```shell
-    $ git clone git@github.com:KeyboardCowboy/time-tracker.git early2noko
+    $ git clone git@github.com:KeyboardCowboy/timeular2noko.git early2noko
     $ cd early2noko
     $ npm install
     ```
 3. Next, copy `example.config.js` to `config.js`.
-4. Obtain your [Early API Key and Secret](https://profile.timeular.com/#/settings/account) and copy them to the `config.js`.
+4. Obtain your Early API Key and Secret from your account settings in the [Early web app](https://product.early.app/) and copy them to the `config.js`.
 5. Obtain your [Noko Personal Access Token](https://lullabot.nokotime.com/time/integrations/freckle_api) and copy it to `config.js`.
 6. Finally, you'll need to map each Early activity to a Noko project.  That is to say, when you are tracking time to an Early activity, which Noko project should that time be billed to?  To do this, follow the steps in the next section.
 

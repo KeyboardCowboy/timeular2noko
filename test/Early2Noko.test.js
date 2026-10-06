@@ -1,10 +1,8 @@
-#!/usr/local/bin/node
+import assert from 'assert';
+import Early2Noko from '../src/Early2Noko.js';
+import config from './sample-config.js';
 
-const assert = require('assert');
-const Timeular2Noko = require('../src/Timeular2Noko');
-const config = require('./sample-config');
-
-const T2N = new Timeular2Noko(config);
+const T2N = new Early2Noko(config);
 
 describe('T2N Note Filter', () => {
     it('should leave normal strings alone', () => {

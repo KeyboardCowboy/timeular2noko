@@ -28,7 +28,7 @@ export const ThisWeekTask = {
         const date2 = new Date();
         date2.setWeekEnd();
 
-        const entries = await T2N.timeularApi.getTimeEntries(date1, date2);
+        const entries = await T2N.earlyApi.getTimeEntries(date1, date2);
 
         if (entries.length === 0) {
             T2N.printEmptyReport();

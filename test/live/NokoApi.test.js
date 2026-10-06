@@ -2,9 +2,9 @@
  * Test Noko API
  */
 
-const assert = require('assert');
-const NokoApi = require('../lib/NokoApi');
-const config = require('../config');
+import assert from 'assert';
+import NokoApi from '../../lib/NokoApi.js';
+import config from '../../config.js';
 
 const date = new Date();
 

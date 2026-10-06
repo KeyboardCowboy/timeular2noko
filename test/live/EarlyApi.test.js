@@ -2,16 +2,16 @@
  * Test Early API
  */
 
-const assert = require('assert');
-const EarlyApi = require('../lib/EarlyApi');
-const config = require('../config');
+import assert from 'assert';
+import EarlyApi from '../../lib/EarlyApi.js';
+import config from '../../config.js';
 
 const Early = new EarlyApi();
 
 describe('Connect to Developer API', () => {
     it('Should retrieve an API token', () => {
         Early.connect(config.earlyKey, config.earlySecret).then(token => {
-            assert(Early.#apiToken.length > 0, "Token length is 0.");
+            assert(token.length > 0, "Token length is 0.");
         });
     });
 
