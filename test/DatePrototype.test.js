@@ -1,8 +1,5 @@
-#!/usr/local/bin/node
-"use strict";
-
-const assert = require('assert');
-require('../src/prototype');
+import assert from 'assert';
+import '../src/prototype.js';
 
 describe('SetWeekStart', () => {
     it('should set the date to 12:00:00am of the previous Sunday', () => {

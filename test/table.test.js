@@ -1,4 +1,4 @@
-const assert = require('assert');
+import assert from 'assert';
 
 describe('Table Render Test', () => {
     it('Should print a table', () => {

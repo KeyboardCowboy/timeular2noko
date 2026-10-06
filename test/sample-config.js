@@ -1,12 +1,12 @@
-module.exports = {
-    "timeularKey": "timeularKeyValue",
-    "timeularSecret": "timeularSecretValue",
+export default {
+    "earlyKey": "earlyKeyValue",
+    "earlySecret": "earlySecretValue",
     "nokoToken": 'nokoTokenValue',
     // Round project summary time to the nearest minute increment.
     "roundProject": 15,
     // 'grouped' or 'individual'
     "logMethod": 'grouped',
-    // Map Timeular Activity IDs to Noko Project IDs.
+    // Map Early Activity IDs to Noko Project IDs.
     "activityProjectMap": {
         1126049: 613456,
         749224: 613456,

@@ -1,14 +1,17 @@
 {
   "name": "time-tracker",
   "version": "0.0.1",
-  "description": "Use Timeular.com data to log time in Noko.",
+  "description": "Use Early (formerly Timeular) data to log time in Noko.",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "test": "mocha"
+    "test": "TZ=UTC mocha",
+    "test:live": "mocha test/live"
   },
   "author": "chris@lullabot.com",
   "license": "GNU",
   "dependencies": {
+    "@keyboardcowboy/taskprompt": "^1.1.2",
     "colors": "^1.4.0",
     "commander": "^7.2.0",
     "inquirer": "^8.1.0",

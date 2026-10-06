@@ -1,26 +1,23 @@
 /**
- * Custom class to report Timeular time to Noko.
+ * Custom class to report Early time to Noko.
  */
 
-const inquirer = require("inquirer");
-const TimeularApi = require('../lib/TimeularApi');
-const NokoApi = require('../lib/NokoApi');
-const TimeularEntry = require("../lib/src/TimeularEntry");
-const NokoTimeEntry = require('../lib/src/NokoTimeEntry');
-const colors = require('colors');
-const config = require("../config");
+import EarlyApi from '../lib/EarlyApi.js';
+import NokoApi from '../lib/NokoApi.js';
+import NokoTimeEntry from '../lib/src/NokoTimeEntry.js';
+import colors from 'colors';
 
-class Timeular2Noko {
+class Early2Noko {
     /**
      * The application config.
      */
     config = {};
 
     /**
-     * A connection to the Timeular API for this account.
-     * @type {TimeularApi}
+     * A connection to the Early API for this account.
+     * @type {EarlyApi}
      */
-    timeularApi = null;
+    earlyApi = null;
 
     /**
      * A connection to the Noko API for this account.
@@ -48,13 +45,13 @@ class Timeular2Noko {
         this.nokoApi = new NokoApi(this.config.nokoToken);
         this.nokoApi.debug(options.debug);
 
-        // Instantiate a Timeular API object.
-        this.timeularApi = new TimeularApi();
-        this.timeularApi.debug(options.debug);
+        // Instantiate an Early API object.
+        this.earlyApi = new EarlyApi();
+        this.earlyApi.debug(options.debug);
 
-        // Establish the Timeular access token.
+        // Establish the Early access token.
         return new Promise((resolve, reject) => {
-            this.timeularApi.connect(this.config.timeularKey, this.config.timeularSecret).then(response => {
+            this.earlyApi.connect(this.config.earlyKey, this.config.earlySecret).then(response => {
                 resolve(response);
             }).catch(err => {
                 console.error(err);
@@ -65,17 +62,17 @@ class Timeular2Noko {
     /**
      * Get an array of tags and notes from each entry.
      *
-     * @param timeularEntries
+     * @param earlyEntries
      * @returns {*[]}
      */
-    getTasksFromTimeularEntries(timeularEntries) {
+    getTasksFromEarlyEntries(earlyEntries) {
         let tasks = [];
 
         // Gather tags and notes from each entry.
-        timeularEntries.forEach(entry => {
+        earlyEntries.forEach(entry => {
             let notes = entry.getNotes();
 
-            // If there are no tags or text on the entry, use the Timeular Activity label.
+            // If there are no tags or text on the entry, use the Early Activity label.
             if (notes.length === 0) {
                 notes.push(entry.activity.getName());
             }
@@ -96,7 +93,7 @@ class Timeular2Noko {
     }
 
     /**
-     * Given an array of notes from Timeular entries, filter out bad entries and duplicates.
+     * Given an array of notes from Early entries, filter out bad entries and duplicates.
      * @param {array} notes
      * @returns {array}
      */
@@ -120,14 +117,14 @@ class Timeular2Noko {
     }
 
     /**
-     * Given an array of timeular entries, group them by the day they were recorded.
-     * @param timeularEntries
+     * Given an array of Early entries, group them by the day they were recorded.
+     * @param earlyEntries
      * @returns {{}}
      */
-    groupTimeularEntriesByDate(timeularEntries) {
+    groupEarlyEntriesByDate(earlyEntries) {
         const grouped = {};
 
-        timeularEntries.forEach(entry => {
+        earlyEntries.forEach(entry => {
             grouped[entry.getDay()] = grouped[entry.getDay()] || [];
             grouped[entry.getDay()].push(entry);
         });
@@ -136,15 +133,15 @@ class Timeular2Noko {
     }
 
     /**
-     * Given an array of timeular entries, group them by the Noko project they are associated with.
-     * @param timeularEntries
+     * Given an array of Early entries, group them by the Noko project they are associated with.
+     * @param earlyEntries
      * @returns {{}}
      */
-    async groupTimeularEntriesByProject(timeularEntries) {
+    async groupEarlyEntriesByProject(earlyEntries) {
         const grouped = {};
 
         // Group the entries by project Id.
-        for (let entry of timeularEntries) {
+        for (let entry of earlyEntries) {
             let nokoProjectId = this.getRelatedNokoProjectId(entry);
             grouped[nokoProjectId] = grouped[nokoProjectId] || {project: {}, entries: []};
             grouped[nokoProjectId].entries.push(entry);
@@ -160,7 +157,7 @@ class Timeular2Noko {
     }
 
     /**
-     * Get the Noko Project Id from a Timeular Entry via its activity.
+     * Get the Noko Project Id from an Early Entry via its activity.
      * @param entry
      * @returns {number}
      */
@@ -172,52 +169,6 @@ class Timeular2Noko {
             nokoProjectId = this.config.activityProjectMap[activity.getId()];
         }
         return nokoProjectId;
-    }
-
-    /**
-     * Get the  name of the report to run.  If not supplied, give users a choice.
-     *
-     * @param options
-     * @param reports
-     * @returns {Promise<unknown>}
-     */
-    getReport(options, reports) {
-        return new Promise((resolve, reject) => {
-            // Get a list of report names from the processor.
-            let reportNames = [];
-            for (let i in reports) {
-                reportNames.push({name: reports[i].label, value: i});
-            }
-
-            const reportName = {
-                type: 'list',
-                name: 'reportName',
-                message: "What report would you like to run?",
-                choices: reportNames,
-                when(answers) {
-                    return !options.hasOwnProperty('report') || options.report !== 'customDate';
-                }
-            };
-            const reportDate = {
-                name: 'reportDate',
-                message: "Get Report for Date [yyyy-mm-dd]:",
-                when(answers) {
-                    return answers.reportName === 'customDate' || options?.report === 'customDate';
-                }
-            };
-
-            // If a report wasn't specified as an option, ask the user for it.
-            if (!options.hasOwnProperty('report') || options.report === 'customDate') {
-                inquirer.prompt([reportName, reportDate]).then(answers => {
-                    // Backfill the report name if it was supplied on the CLI.
-                    answers.reportName = answers.reportName || options.report;
-
-                    resolve(answers);
-                });
-            } else {
-                resolve({reportName: options.report, reportDate: null});
-            }
-        });
     }
 
     /**
@@ -248,10 +199,10 @@ class Timeular2Noko {
             const project = group.project;
 
             // Get the total duration of time worked on this project for this day.
-            const projHours = this.sumTimeularEntries(group.entries);
+            const projHours = this.sumEarlyEntries(group.entries);
 
             // Get a filtered array of tasks and tags for the entries in this project.
-            const projTasks = this.getTasksFromTimeularEntries(group.entries);
+            const projTasks = this.getTasksFromEarlyEntries(group.entries);
 
             // Mark deactivated Noko projects.
             if (project.isValid() && !project.isActive()) {
@@ -272,18 +223,18 @@ class Timeular2Noko {
         // Add a notice if the report contains deactivated Noko projects.
         if (deactivatedProjectCount > 0) {
             console.log('');
-            console.log(`    There are ${deactivatedProjectCount.toString().bold} archived Noko projects mapped to Timeular activities today.  Time will not be logged to these projects.`.italic.yellow);
+            console.log(`    There are ${deactivatedProjectCount.toString().bold} archived Noko projects mapped to Early activities today.  Time will not be logged to these projects.`.italic.yellow);
         }
     }
 
     /**
      * Print a multi-day time summary to the console.
      *
-     * @param timeularEntries
+     * @param earlyEntries
      * @returns {Promise<void>}
      */
-    async printMultiDaySummary(timeularEntries) {
-        const dateGroup = this.groupTimeularEntriesByDate(timeularEntries);
+    async printMultiDaySummary(earlyEntries) {
+        const dateGroup = this.groupEarlyEntriesByDate(earlyEntries);
         let summaryTotal = {
             billable: 0,
             nonBillable: 0,
@@ -293,10 +244,9 @@ class Timeular2Noko {
         // Print each day.
         for (let i in dateGroup) {
             let group = dateGroup[i];
-            let projGroup = await this.groupTimeularEntriesByProject(group);
+            let projGroup = await this.groupEarlyEntriesByProject(group);
 
             // @todo: Sort by project id to keep reports consistently formatted.
-
 
             // Gather the billable summary data for the group.
             let summary = this.getBillableSummary(projGroup);
@@ -353,9 +303,9 @@ class Timeular2Noko {
             let project = projGroup[projId].project;
 
             if (project.isBillable()) {
-                summary.billable += this.sumTimeularEntries(entries);
+                summary.billable += this.sumEarlyEntries(entries);
             } else {
-                summary.nonBillable += this.sumTimeularEntries(entries);
+                summary.nonBillable += this.sumEarlyEntries(entries);
             }
         }
 
@@ -365,15 +315,15 @@ class Timeular2Noko {
     }
 
     /**
-     * Get the total duration worked from a set of timeular entries.
+     * Get the total duration worked from a set of Early entries.
      *
-     * @param {array[TimeularEntry]} timeularEntries
+     * @param {array[EarlyEntry]} earlyEntries
      * @returns {number}
      */
-    sumTimeularEntries(timeularEntries) {
+    sumEarlyEntries(earlyEntries) {
         let totalTime = 0;
 
-        timeularEntries.forEach(entry => {
+        earlyEntries.forEach(entry => {
             totalTime += entry.getDuration();
         });
 
@@ -396,10 +346,10 @@ class Timeular2Noko {
      * @returns {Promise<void>}
      */
     async submitEntriesToNoko(entries) {
-        const dateGroup = this.groupTimeularEntriesByDate(entries);
+        const dateGroup = this.groupEarlyEntriesByDate(entries);
 
         for (let i in dateGroup) {
-            let projectGroup = await this.groupTimeularEntriesByProject(dateGroup[i]);
+            let projectGroup = await this.groupEarlyEntriesByProject(dateGroup[i]);
 
             // Add some spacing to the report.
             console.log('');
@@ -408,11 +358,11 @@ class Timeular2Noko {
                 let project = projectGroup[projId].project;
                 let group = projectGroup[projId];
                 let date = group.entries[0].getDate();
-                let hours = this.sumTimeularEntries(group.entries);
+                let hours = this.sumEarlyEntries(group.entries);
                 let minutes = hours * 60;
 
                 if (project.isValid() && project.isActive()) {
-                    let description = this.getTasksFromTimeularEntries(group.entries).join(', ');
+                    let description = this.getTasksFromEarlyEntries(group.entries).join(', ');
                     let timeEntry = new NokoTimeEntry(date, minutes, projId, description);
 
                     // Create the entry and log the results.
@@ -429,7 +379,7 @@ class Timeular2Noko {
     }
 
     /**
-     * Get an array of unique Noko project IDs mapped to Timeular activities.
+     * Get an array of unique Noko project IDs mapped to Early activities.
      * @returns {[]}
      */
     getAllProjectIds() {
@@ -437,4 +387,4 @@ class Timeular2Noko {
     }
 }
 
-module.exports = Timeular2Noko;
+export default Early2Noko;
